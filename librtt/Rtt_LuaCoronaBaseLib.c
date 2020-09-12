@@ -223,7 +223,9 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 #endif
 
 #ifdef Rtt_LINUX_ENV
-		Rtt_Log(stringPointer);
+		char buffer[stringLength + 2];
+		snprintf(buffer, stringLength + 2, "%s\0", stringPointer);
+		Rtt_Log(buffer);
 #else
 
 		fwrite(stringPointer, sizeof(char), stringLength, stdout);

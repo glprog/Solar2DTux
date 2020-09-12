@@ -151,6 +151,12 @@ void LinuxMenuEvents::OnClearProjectSandbox(wxCommandEvent &event)
 	clearProjectSandboxDlg->Destroy();
 }
 
+void LinuxMenuEvents::OnAndroidBackButton(wxCommandEvent &event)
+{
+	Rtt::PlatformInputDevice *dev = NULL;
+	Rtt::KeyEvent ke(dev, Rtt::KeyEvent::kDown, "back", 0, false, false, false, false);
+	wxGetApp().GetFrame()->GetContext()->GetRuntime()->DispatchEvent(ke);
+}
 void LinuxMenuEvents::OnOpenPreferences(wxCommandEvent &event)
 {
 	Rtt::LinuxPreferencesDialog *newPreferencesDialog = new Rtt::LinuxPreferencesDialog(wxGetApp().GetFrame(), wxID_ANY, wxEmptyString);
@@ -196,7 +202,7 @@ void LinuxMenuEvents::OnBuildForWeb(wxCommandEvent &event)
 void LinuxMenuEvents::OnBuildForLinux(wxCommandEvent &event)
 {
 	wxGetApp().GetFrame()->CreateSuspendedPanel();
-	Rtt::LinuxBuildDialog *linuxBuildDialog = new Rtt::LinuxBuildDialog(wxGetApp().GetFrame(), -1, wxEmptyString, wxDefaultPosition, wxSize(550, 300));
+	Rtt::LinuxBuildDialog *linuxBuildDialog = new Rtt::LinuxBuildDialog(wxGetApp().GetFrame(), -1, wxEmptyString, wxDefaultPosition, wxSize(550, 330));
 	linuxBuildDialog->SetAppContext(wxGetApp().GetFrame()->GetContext());
 	linuxBuildDialog->ShowModal();
 	linuxBuildDialog->Destroy();

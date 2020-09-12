@@ -11,6 +11,7 @@
 
 #include "Rtt_RuntimeDelegate.h"
 #include "Rtt_DeviceOrientation.h"
+#include <string>
 
 namespace Rtt
 {
@@ -31,6 +32,7 @@ namespace Rtt
 		mutable int fContentWidth;
 		mutable int fContentHeight;
 		mutable int fFPS;
-		DeviceOrientation::Type fOrientation;
+		mutable std::string fScaleMode;
+		mutable DeviceOrientation::Type fOrientation;
 	};
 }; // namespace Rtt

@@ -84,6 +84,18 @@ namespace Rtt
 		}
 		lua_pop(L, 1);
 
+		lua_getfield(L, -1, "scale");
+		if (lua_type(L, -1) == LUA_TSTRING)
+		{
+			fScaleMode = lua_tostring(L, -1);
+		}
+		lua_pop(L, 1);
+
+		if (fScaleMode.empty())
+		{
+			fScaleMode = "none";
+		}
+
 		// default
 		if (fContentWidth == 0)
 		{

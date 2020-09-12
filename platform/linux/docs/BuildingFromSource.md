@@ -6,7 +6,7 @@
  
  **Step 2**
  
- Run the `setup_dev_x.sh` script where `x` is the script for your distribution (i.e. `setup_dev_ubuntu.sh`. This script will install all the prerequisites for building Solar2DTux.
+ Run the `setup_dev.sh` script. This script will install all the prerequisites for building Solar2DTux.
 
 **Step 3**
 

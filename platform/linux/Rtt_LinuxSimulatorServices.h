@@ -34,6 +34,7 @@ namespace Rtt
 
 		/// <summary>Destroys this object and its owned objects.</summary>
 		virtual ~LinuxSimulatorServices();
+
 		virtual bool CloneProject() const;
 
 		/// <summary>Displays a "New Project" window for creating a new Corona project.</summary>
@@ -86,11 +87,6 @@ namespace Rtt
 
 	private:
 		static std::string fCurrentProjectPath;
-		/// <summary>
-		///  Reference to the simulator application's view that will will implement this class' services
-		///  such as "New Project", "Open Project", etc.
-		/// </summary>
-		//CSimulatorView& fSimulatorView;
 	};
 }; // namespace Rtt
 

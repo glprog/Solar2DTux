@@ -58,6 +58,7 @@ mv Solar2DBuilder ~/.local/share/Corona/Native/Corona/lin/bin/
 # install required dependencies via Apt
 if [[ $USE_APT == 1 ]]; then
   # nake sure we have the latest package lists
+  sudo add-apt-repository ppa:cwchien/gradle -y
   sudo apt-get update
   # install dependencies
   sudo apt-get install build-essential -y
@@ -79,10 +80,13 @@ if [[ $USE_APT == 1 ]]; then
   sudo apt-get install libzopfli1 -y
   sudo apt-get install openjdk-8-jdk-headless -y
   sudo apt-get install openjdk-8-jre-headless -y
+  sudo apt-get install unzip -y
+  sudo apt-get install git -y
   sudo apt-get install p7zip -y
   sudo apt-get install p7zip-full -y
   sudo apt-get install lua5.1 -y
   sudo apt-get install gradle -y
+  sudo apt upgrade gradle
 # install required dependencies via Pacman
 elif [[ $USE_PACMAN == 1 ]]; then
   sudo pacman -Sy base-devel --noconfirm
@@ -104,6 +108,8 @@ elif [[ $USE_PACMAN == 1 ]]; then
   sudo pacman -Sy zopfli --noconfirm
   sudo pacman -Sy jdk14-openjdk --noconfirm
   sudo pacman -Sy jre14-openjdk --noconfirm
+  sudo pacman -Sy unzip --noconfirm
+  sudo pacman -Sy git --noconfirm
   sudo pacman -Sy p7zip --noconfirm
   sudo pacman -Sy lua51 --noconfirm
   sudo pacman -Sy gradle --noconfirm
@@ -120,14 +126,11 @@ sudo mv Resources/Solar2DTux.desktop /usr/share/applications/
 # move everything to /opt
 OPT_LOCATION=/opt/Solar2D
 sudo mkdir -p $OPT_LOCATION
+sudo rm -rf $OPT_LOCATION/Resources
 sudo mv Solar2DSimulator $OPT_LOCATION
 sudo mv Solar2DConsole $OPT_LOCATION
 sudo mv start.sh $OPT_LOCATION
 sudo mv Resources $OPT_LOCATION
-
-# set permissions
-sudo chown $USER:$USER $OPT_LOCATION
-sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
 if [[ "$PATH" =~ (^|:)"/opt/Solar2D"(|/)(:|$) ]]; then
     echo "Application path already configured"
@@ -138,18 +141,24 @@ fi
 
 # clone sample code (or just fetch latest if it exists)
 SAMPLE_CODE_REMOTE=https://github.com/DannyGlover/Solar2DTux-Samples.git
-SAMPLE_CODE_DIR=/opt/Solar2D/SampleCode
+SAMPLE_CODE_DIR=$OPT_LOCATION/SampleCode
+CURRENT_DIR=${PWD}
 
 if [ ! -d $SAMPLE_CODE_DIR ]
 then
-    git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
+    sudo git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
 else
-    cd $SAMPLE_CODE_DIR/
-    git pull $SAMPLE_CODE_REMOTE
+    cd $SAMPLE_CODE_DIR
+    sudo git pull $SAMPLE_CODE_REMOTE
 fi
+
+# set permissions
+sudo chown $USER:$USER $OPT_LOCATION
+sudo chown $USER:$USER $SAMPLE_CODE_DIR
+sudo chmod -R a+rwx $OPT_LOCATION/start.sh
 
 echo "In order to build for Android, you need to install Android Studio, install Android Api level 28 via the SDK manager and accept the license agreements."
 echo "Then you can build via Solar2DTux for Android."
 
 ## remove this directory
-rm -rf ${PWD}
+rm -rf ${CURRENT_DIR}

@@ -16,6 +16,7 @@
       <File Name="../shared/ListKeyStore.cpp" ExcludeProjConfig=""/>
     </VirtualDirectory>
     <VirtualDirectory Name="linux">
+      <File Name="Rtt_LinuxUtils.cpp"/>
       <File Name="Rtt_LinuxMenuEvents.cpp"/>
       <File Name="Rtt_LinuxMouseListener.cpp"/>
       <File Name="Rtt_ConsoleApp.cpp"/>
@@ -67,6 +68,7 @@
         </VirtualDirectory>
       </VirtualDirectory>
       <VirtualDirectory Name="include">
+        <File Name="Rtt_LinuxUtils.h"/>
         <File Name="Rtt_LinuxMenuEvents.h"/>
         <File Name="Rtt_LinuxMouseListener.h"/>
         <File Name="Rtt_ConsoleApp.h"/>
@@ -1495,7 +1497,6 @@
         <Preprocessor Value="wxUSE_UNSAFE_WXSTRING_CONV"/>
         <Preprocessor Value="wxUSE_STD_CONTAINERS_COMPATIBLY"/>
         <Preprocessor Value="wxUSE_GLCANVAS"/>
-        <Preprocessor Value="_DEBUG"/>
         <Preprocessor Value="Rtt_LINUX_ENV"/>
         <Preprocessor Value="FT2_BUILD_LIBRARY"/>
         <Preprocessor Value="ALMIXER_COMPILE_WITHOUT_SDL"/>

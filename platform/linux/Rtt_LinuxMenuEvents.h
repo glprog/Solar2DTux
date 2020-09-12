@@ -13,6 +13,9 @@
 #define ID_MENU_SHOW_PROJECT_FILES  wxID_HIGHEST + 80
 #define ID_MENU_SHOW_PROJECT_SANDBOX wxID_HIGHEST + 90
 #define ID_MENU_CLEAR_PROJECT_SANDBOX wxID_HIGHEST + 100
+#define ID_MENU_ZOOM_IN wxID_HIGHEST + 101
+#define ID_MENU_ZOOM_OUT wxID_HIGHEST + 102
+#define ID_MENU_BACK_BUTTON wxID_HIGHEST + 103
 #define ID_MENU_BUILD_ANDROID wxID_HIGHEST + 110
 #define ID_MENU_BUILD_WEB wxID_HIGHEST + 120
 #define ID_MENU_BUILD_LINUX wxID_HIGHEST + 130
@@ -20,6 +23,7 @@
 #define ID_MENU_OPEN_WELCOME_SCREEN wxID_HIGHEST + 150
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 160
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 170
+#define ID_MENU_VIEW_AS wxID_HIGHEST + 180
 
 class LinuxMenuEvents
 {
@@ -32,6 +36,7 @@ public:
 	static void OnShowProjectFiles(wxCommandEvent &event);
 	static void OnShowProjectSandbox(wxCommandEvent &event);
 	static void OnClearProjectSandbox(wxCommandEvent &event);
+	static void OnAndroidBackButton(wxCommandEvent &event);
 	static void OnOpenPreferences(wxCommandEvent &event);
 	static void OnQuit(wxCommandEvent &WXUNUSED(event));
 	static void OnBuildForAndroid(wxCommandEvent &event);

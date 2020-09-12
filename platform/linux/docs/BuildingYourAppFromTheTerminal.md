@@ -11,7 +11,7 @@ Below, you will find explanations for each parameter, along with a real world ex
 * appVersion - (string) The version of your app.
 * dstPath - (string) The path that your app binary will be produced at.
 * projectPath - (string) The path to your Solar2D project. Be sure to use double quotes if your path contains spaces.
-* linuxtemplate - (string) The path to the linux template (for linux builds only) - If you installed Solar2DTux via our installers, this path is `/opt/Solar2DTux/Resources/template_x64.tgz` - Otherwise, you will find this file in `location_you_cloned_solar2d_tux_to/platform/linux/Solar2DSimulator/Resources/template_x64.tgz`.
+* linuxtemplate - (string) The path to the linux template (for linux builds only) - If you installed Solar2DTux via our installers, this path is `/opt/Solar2D/Resources/template_x64.tgz` - Otherwise, you will find this file in `location_you_cloned_solar2d_tux_to/platform/linux/Solar2DSimulator/Resources/template_x64.tgz`.
 
 Here is an example of a configuration file (use a .lua extension):
 

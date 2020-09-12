@@ -23,15 +23,12 @@
 using namespace std;
 class DropdownMenu;
 
-#define TIMER_ID 1000
-
 class Rtt_LinuxConsole: public wxFrame
 {
 public:
 	Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
 
 private:
-	static const int intTimerInterval = 250;
 	void SetProperties();
 	void DoLayout();
 

@@ -318,6 +318,23 @@ namespace Rtt
 			resultDialog->SetMessage(wxT("The keystore password is invalid."));
 		}
 
+		// ensure unzip is installed on the users system
+		if (!wxFileName::Exists("/usr/bin/unzip"))
+		{
+			checksPassed = false;
+			resultDialog->SetMessage(wxT("unzip tool not found at /usr/bin - please install it via your package manager."));
+		}
+
+		// ensure Solar2DBuilder exists at the correct location
+		wxString solar2DBuilderPath(LinuxFileUtils::GetHomePath());
+		solar2DBuilderPath.append("/.local/share/Corona/Native/Corona/lin/bin/Solar2DBuilder");
+
+		if (!wxFileName::Exists(solar2DBuilderPath))
+		{
+			checksPassed = false;
+			resultDialog->SetMessage(wxT("Solar2DBuilder not found at ~/.local/share/Corona/Native/Corona/lin/bin/Solar2DBuilder - please re-install Solar2DTux."));
+		}
+
 		// ensure we have write access to the target output directory
 		if (!wxFileName::IsDirWritable(outputDir))
 		{

@@ -87,15 +87,48 @@ namespace Rtt
 			static LinuxPreferencesDialog::RelaunchType relaunchOnFileChange;
 			static int windowXPos;
 			static int windowYPos;
+			static int skinID;
+			static int skinWidth;
+			static int skinHeight;
+			static int zoomedWidth;
+			static int zoomedHeight;
 			static wxConfig *configFile;
 		};
 
+		struct SkinProperties
+		{
+			wxString device;
+			int screenOriginX;
+			int screenOriginY;
+			int screenWidth;
+			int screenHeight;
+			int androidDisplayApproximateDpi;
+			wxString displayManufacturer;
+			wxString displayName;
+			bool isUprightOrientationPortrait;
+			bool supportsScreenRotation;
+			wxString windowTitleBarName;
+			wxString skinTitle;
+			int id;
+			bool selected;
+		};
+
+		static bool LoadSkin(lua_State *L, int skinID, std::string filePath);
+		static LinuxSimulatorView::SkinProperties GetSkinProperties(int skinID);
+		static LinuxSimulatorView::SkinProperties GetSkinProperties(wxString skinTitle);
+		static void DeselectSkins();
+		static void SelectSkin(int skinID);
 		static bool IsRunningOnSimulator();
 		static void OnBuildForWeb(SolarAppContext *ctx);
 		static void OnWebBuild(wxCommandEvent &);
 		static void OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform);
 		static void OnCancel(wxCommandEvent &);
 		static void AppWebBuild(SolarAppContext *ctx);
+
+	public:
+		static std::map<int, LinuxSimulatorView::SkinProperties> fSkins;
+		static const float skinScaleFactor;
+		static const int skinMinWidth;
 
 	public:
 		struct webBuildParams : public wxObject

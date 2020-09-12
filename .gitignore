@@ -294,4 +294,4 @@ platform/linux/Solar2DSimulator/Solar2DBuilder
 platform/linux/Solar2DBuilder.mk
 platform/linux/Solar2DSimulator/Solar2DTux_*.tgz
 platform/linux/Solar2DSimulator/changelog.txt
-
+platform/linux/build-Release/

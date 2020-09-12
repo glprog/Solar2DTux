@@ -26,6 +26,11 @@ local sidePadding = 12
 local recentProjectTitles = {}
 local popupMenu = nil
 local recentProjectsGroup = display.newGroup()
+local handleObjectMouseEvents = nil
+local createButton = nil
+local openRecentProject = nil
+local createRecentProjectList = nil
+local createPopupMenu = nil
 
 display.setDefault("background", backgroundColor[1], backgroundColor[2], backgroundColor[3])
 
@@ -198,17 +203,37 @@ separatorLine.x = display.contentCenterX
 separatorLine.y = getStartedText.y + getStartedText.contentHeight + 2
 separatorLine:setFillColor(unpack(buttonBackgroundColor))
 
-local function openRecentProject(event)
+openRecentProject = function(event)
 	local details = event.target.details
 	local recentProjects = loadTable(recentProjectsPath)
 	removeExistingProjectFromRecents(recentProjects, details.formattedString)
 	table.insert(recentProjects, 1, {formattedString = details.formattedString, fullURLString = details.fullURL})
 	saveTable(recentProjects, recentProjectsPath)
 
-	simulator.show("open", details.fullURL)
+	local projectMain = io.open(details.fullURL, "r")
+
+	local function onProjectNotFound(event)
+		if (event.action == "clicked") then
+			local i = event.index
+
+			if (i == 1) then
+				removeExistingProjectFromRecents(recentProjects, details.formattedString)
+				createRecentProjectList()
+			end
+		end
+	end
+
+	if (projectMain) then
+		io.close(projectMain)
+		simulator.show("open", details.fullURL)
+	else
+		local title = "Project Not Found On Disk!"
+		local message = "The project you selected was not found on your system.\n\nWould you like to remove it from the recent projects list?"
+		local alert = native.showAlert(title, message, { "Yes", "No" }, onProjectNotFound)
+	end
 end
 
-local function handleObjectMouseEvents(event)
+handleObjectMouseEvents = function(event)
 	local phase = event.type
 	local showHand = true
 
@@ -223,7 +248,7 @@ local function handleObjectMouseEvents(event)
 	return true
 end
 
-local function createButton(label, onRelease)
+createButton = function(label, onRelease)
 	local button = widget.newButton(
 	{
 		label = label,
@@ -251,7 +276,7 @@ local function createButton(label, onRelease)
 	return button
 end
 
-local function createRecentProjectList()
+createRecentProjectList = function()
 	if (recentProjectsGroup.numChildren > 0) then
 		for i = recentProjectsGroup.numChildren, 1, -1 do
 			display.remove(recentProjectsGroup[i])
@@ -361,7 +386,7 @@ local function createRecentProjectList()
 	recentProjectsGroup:toFront()
 end
 
-local function createPopupMenu()
+createPopupMenu = function()
 	local group = display.newGroup()
 	group.event = nil
 

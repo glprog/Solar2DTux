@@ -6,7 +6,7 @@
 #define LINUX_CONSOLE_CLEAR_CMD "###clear###"
 #define LINUX_CONSOLE_QUIT_CMD "###quit###"
 
-static Rtt_LinuxIPCClient *consoleClient;
+static Rtt_LinuxIPCClient *consoleClient = NULL;
 static bool instanceCreated = false;
 using namespace std;
 

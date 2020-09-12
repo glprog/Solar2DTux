@@ -37,6 +37,11 @@
 #define SIMULATOR_CONFIG_LAST_PROJECT_DIRECTORY "/lastProjectDirectory"
 #define SIMULATOR_CONFIG_WINDOW_X_POSITION "/xPos"
 #define SIMULATOR_CONFIG_WINDOW_Y_POSITION "/yPos"
+#define SIMULATOR_CONFIG_SKIN_ID "/skinID"
+#define SIMULATOR_CONFIG_SKIN_WIDTH "/skinWidth"
+#define SIMULATOR_CONFIG_SKIN_HEIGHT "/skinHeight"
+#define SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH "/zoomedWidth"
+#define SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT "/zoomedHeight"
 
 namespace Rtt
 {
@@ -46,6 +51,8 @@ namespace Rtt
 	}
 
 	// initialise vars
+	const float  LinuxSimulatorView::skinScaleFactor = 1.5;
+	const int  LinuxSimulatorView::skinMinWidth = 320;
 	wxString LinuxSimulatorView::Config::settingsFilePath = wxEmptyString;
 	wxString LinuxSimulatorView::Config::lastProjectDirectory  = wxEmptyString;
 	bool LinuxSimulatorView::Config::showRuntimeErrors = true;
@@ -53,7 +60,13 @@ namespace Rtt
 	LinuxPreferencesDialog::RelaunchType LinuxSimulatorView::Config::relaunchOnFileChange = LinuxPreferencesDialog::RelaunchType::Always;
 	int LinuxSimulatorView::Config::windowXPos = 10;
 	int LinuxSimulatorView::Config::windowYPos = 10;
+	int LinuxSimulatorView::Config::skinID = 6246;
+	int LinuxSimulatorView::Config::skinWidth = 320;
+	int LinuxSimulatorView::Config::skinHeight = 480;
+	int LinuxSimulatorView::Config::zoomedWidth = LinuxSimulatorView::Config::skinWidth;
+	int LinuxSimulatorView::Config::zoomedHeight = LinuxSimulatorView::Config::skinHeight;
 	wxConfig *LinuxSimulatorView::Config::configFile;
+	std::map<int, LinuxSimulatorView::SkinProperties> LinuxSimulatorView::fSkins;
 
 	void LinuxSimulatorView::Config::Load()
 	{
@@ -74,6 +87,11 @@ namespace Rtt
 			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), &relaunchOnFileChange);
 			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), &LinuxSimulatorView::Config::windowXPos);
 			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), &LinuxSimulatorView::Config::windowYPos);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ID), &LinuxSimulatorView::Config::skinID);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), &LinuxSimulatorView::Config::skinWidth);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), &LinuxSimulatorView::Config::skinHeight);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), &LinuxSimulatorView::Config::zoomedWidth);
+			LinuxSimulatorView::Config::configFile->Read(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), &LinuxSimulatorView::Config::zoomedHeight);
 			LinuxSimulatorView::Config::relaunchOnFileChange = static_cast<LinuxPreferencesDialog::RelaunchType>(relaunchOnFileChange);
 		}
 		else
@@ -90,12 +108,168 @@ namespace Rtt
 		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_RELAUNCH_ON_FILE_CHANGE), static_cast<int>(LinuxSimulatorView::Config::relaunchOnFileChange));
 		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_X_POSITION), LinuxSimulatorView::Config::windowXPos);
 		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_WINDOW_Y_POSITION), LinuxSimulatorView::Config::windowYPos);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ID), LinuxSimulatorView::Config::skinID);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_WIDTH), LinuxSimulatorView::Config::skinWidth);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_HEIGHT), LinuxSimulatorView::Config::skinHeight);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_WIDTH), LinuxSimulatorView::Config::zoomedWidth);
+		LinuxSimulatorView::Config::configFile->Write(wxT(SIMULATOR_CONFIG_SKIN_ZOOMED_HEIGHT), LinuxSimulatorView::Config::zoomedHeight);
 		LinuxSimulatorView::Config::configFile->Flush();
 	}
 
 	void LinuxSimulatorView::Config::Cleanup()
 	{
 		delete LinuxSimulatorView::Config::configFile;
+	}
+
+	bool LinuxSimulatorView::LoadSkin(lua_State *L, int skinID, std::string filePath)
+	{
+		int top = lua_gettop(L);
+		int status = Lua::DoFile(L, filePath.c_str(), 0, true);
+		lua_pop(L, 1); // remove DoFile result
+		lua_getglobal(L, "simulator");
+
+		SkinProperties skin;
+
+		if (lua_type(L, -1) == LUA_TTABLE)
+		{
+			lua_getfield(L, -1, "device");
+			if (lua_type(L, -1) == LUA_TSTRING)
+			{
+				skin.device = lua_tostring(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "screenOriginX");
+			if (lua_type(L, -1) == LUA_TNUMBER)
+			{
+				skin.screenOriginX = lua_tointeger(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "screenOriginY");
+			if (lua_type(L, -1) == LUA_TNUMBER)
+			{
+				skin.screenOriginY = lua_tointeger(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "screenWidth");
+			if (lua_type(L, -1) == LUA_TNUMBER)
+			{
+				skin.screenWidth = lua_tointeger(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "screenHeight");
+			if (lua_type(L, -1) == LUA_TNUMBER)
+			{
+				skin.screenHeight = lua_tointeger(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "androidDisplayApproximateDpi");
+			if (lua_type(L, -1) == LUA_TNUMBER)
+			{
+				skin.androidDisplayApproximateDpi  = lua_tointeger(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "displayManufacturer");
+			if (lua_type(L, -1) == LUA_TSTRING)
+			{
+				skin.displayManufacturer = lua_tostring(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "displayName");
+			if (lua_type(L, -1) == LUA_TSTRING)
+			{
+				skin.displayName = lua_tostring(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "isUprightOrientationPortrait");
+			if (lua_type(L, -1) == LUA_TBOOLEAN)
+			{
+				skin.isUprightOrientationPortrait = lua_toboolean(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "supportsScreenRotation");
+			if (lua_type(L, -1) == LUA_TBOOLEAN)
+			{
+				skin.supportsScreenRotation = lua_toboolean(L, -1);
+			}
+			lua_pop(L, 1);
+
+			lua_getfield(L, -1, "windowTitleBarName");
+			if (lua_type(L, -1) == LUA_TSTRING)
+			{
+				skin.windowTitleBarName = lua_tostring(L, -1);
+			}
+			lua_pop(L, 1);
+
+			// pop simulator
+			lua_pop(L, 1);
+			lua_settop(L, top);
+
+			wxString skinTitle(skin.windowTitleBarName);
+			skinTitle.append(wxString::Format(wxT(" (%ix%i)"), skin.screenWidth, skin.screenHeight));
+			skin.skinTitle = skinTitle;
+			skin.id = skinID;
+			skin.selected = false;
+
+			fSkins[skinID] = skin;
+		}
+		else
+		{
+			printf("Couldn't find 'simulator' table\n");
+		}
+
+		return (status == 0);
+	}
+
+	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(int skinID)
+	{
+		if (fSkins.count(skinID) > 0)
+		{
+			return fSkins[skinID];
+		}
+
+		return fSkins.begin()->second;
+	}
+
+	LinuxSimulatorView::SkinProperties LinuxSimulatorView::GetSkinProperties(wxString skinTitle)
+	{
+		SkinProperties foundSkin;
+
+		for (int i = 0; i < fSkins.size(); i++)
+		{
+			if (fSkins[i].skinTitle.IsSameAs(skinTitle))
+			{
+				foundSkin = fSkins[i];
+				break;
+			}
+		}
+
+		return foundSkin;
+	}
+
+	void LinuxSimulatorView::DeselectSkins()
+	{
+		for (int i = 0; i < fSkins.size(); i++)
+		{
+			fSkins[i].selected = false;
+		}
+	}
+
+	void LinuxSimulatorView::SelectSkin(int skinID)
+	{
+		if (fSkins.count(skinID) > 0)
+		{
+			DeselectSkins();
+			fSkins[skinID].selected = true;
+		}
 	}
 
 	bool LinuxSimulatorView::IsRunningOnSimulator()

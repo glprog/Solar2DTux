@@ -186,6 +186,7 @@ namespace Rtt
 		String fSystemCachesDir;
 		String fInstallDir;
 		String fSkinDir;
+		mutable MPlatform::StatusBarMode fStatusBarMode;
 		LinuxCrypto fCrypto;
 		mutable PlatformStoreProvider *fStoreProvider;
 		mutable PlatformFBConnect *fFBConnect;
